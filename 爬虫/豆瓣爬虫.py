@@ -8,7 +8,17 @@ import sys
 import jieba
 import pandas as pd
 import numpy
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt  #若路径中有中文则import会报错，或者用下面方法解决：
+####################
+#改_init_.py文件，
+
+## 与源文件的代码区别在于第一行与最后一行的字符串前添加了标记 b 
+#_backend_loading_tb = b"".join(
+    #line for line in traceback.format_stack()
+    ## Filter out line noise from importlib line.
+    #if not line.startswith(b'  File "<frozen importlib._bootstrap'))
+
+####################
 import matplotlib
 from wordcloud import WordCloud
 import pylab 
@@ -47,8 +57,15 @@ def GetComments(URL):
     comment_div_lits = soup.find_all('div', class_='comment')
     eachCommentList = []
     for item in comment_div_lits: 
-        if item.find_all('p')[0].string is not None:     
-            eachCommentList.append(item.find_all('p')[0].string)
+        #下面的这两行代码在2019-2-19使用时发下.string不能找到p中的字符串，用.text可以找到
+        #if item.find_all('p')[0].string is not None:     
+            #eachCommentList.append(item.find_all('p')[0].string)
+
+        m = item.find_all('p')
+        n = m[0].text
+        if n is not None:
+            eachCommentList.append(n)
+            
     comments = ''
     for k in range(len(eachCommentList)):
         comments = comments + eachCommentList[k].strip()
